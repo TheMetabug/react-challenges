@@ -1,0 +1,17 @@
+.counter-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    text-align: center;
+    background: #ffffff;
+    color: black;
+    font-weight: 600;
+    font-size: large;
+}
+
+.counter-value {
+    align-content: center;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.6rem;
+    width: 5rem;
+}
