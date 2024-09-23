@@ -1,9 +1,14 @@
+// This is the main page to contain all the challenge tab pages
+// which can be switched by clicking on the buttons
+
 'use client';
 import React, { useState } from "react";
 import CounterChallenge from "./counter/script";
+import DynamicListChallenge from "./dynamicList/script";
 
 enum TabNames {
     Counter = 0,
+    DynamicList = 1,
 };
 
 const getTabName = (index: number): string => {
@@ -36,8 +41,11 @@ const Pages = () => {
 
     const currentTabComponent = () => {
         switch (currentTab) {
+            default:
             case 0:
                 return <CounterChallenge/>;
+            case 1:
+                return <DynamicListChallenge/>;
         }
     };
 
