@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 
 // Mockup data which simulates how Tasks are given to this component with database
 // TODO: perhaps these could be given in props. Let's not use database (at least for now)
-const TodoListData: Array<{ id: number; taskName: string }> = [
-    { id: 0, taskName: "Wake up" },
-    { id: 1, taskName: "Complete the work task" },
-    { id: 2, taskName: "Make dinner" },
-    { id: 3, taskName: "Go to gym" },
+const TodoListData: Array<{ id: number; taskName: string, taskDone: boolean }> = [
+    { id: 0, taskName: "Wake up", taskDone: false },
+    { id: 1, taskName: "Complete the work task", taskDone: false },
+    { id: 2, taskName: "Make dinner", taskDone: false },
+    { id: 3, taskName: "Go to gym", taskDone: false },
 ];
 
 /**
@@ -17,14 +17,18 @@ const TodoListData: Array<{ id: number; taskName: string }> = [
  */
 const TodoList: React.FC = () => {
     const [checkedTasks, setCheckedTasks] = useState<
-        Array<{ id: number; taskName: string }>
+        Array<{ id: number; taskName: string, taskDone: boolean }>
     >([]);
 
     // When page is refreshed and there is a checkbox checked,
     // checkedTasks needs to be initialized properly
     useEffect(() => {
+        initializeTasks();
+    }, [])
+
+    const initializeTasks = () => {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        const currentCheckedTasks = [...checkedTasks];
+        let currentCheckedTasks = [...checkedTasks];
 
         // Check trough all checkboxes and save it to the currentCheckedTasks list
         checkboxes.forEach((value: Element) => {
@@ -35,14 +39,20 @@ const TodoList: React.FC = () => {
             // If the checkbox is checked, and task id exists,
             // add the task to the currentCheckedTasks list
             console.log(inputElement, inputElement.checked, taskId);
-            if (inputElement.checked && task != undefined) {
-                currentCheckedTasks.push(task);
+            if (task != undefined) {
+                if (task.taskDone ) {
+                    currentCheckedTasks.push(task);
+                    inputElement.checked = true;
+                } else {
+                    currentCheckedTasks = currentCheckedTasks.filter((obj) => obj.id !== task.id);
+                    inputElement.checked = false;
+                }
             }
         });
 
         // Finally, update the checkedTasks list
         setCheckedTasks(currentCheckedTasks);
-    }, [])
+    };
 
     /**
      * Function to update the checkedTasks state when a checkbox is checked or unchecked
@@ -50,16 +60,19 @@ const TodoList: React.FC = () => {
      * @param isChecked - boolean indicating if the checkbox is checked or not
      */
     const onTaskCheck = (
-        taskObj: { id: number; taskName: string },
+        taskObj: { id: number; taskName: string; taskDone: boolean },
         isChecked: boolean
     ) => {
         let currentCheckedTasks = [...checkedTasks];
+
         if (isChecked && !currentCheckedTasks.includes(taskObj)) {
             currentCheckedTasks.push(taskObj);
         }
         if (!isChecked && currentCheckedTasks.includes(taskObj)) {
             currentCheckedTasks = currentCheckedTasks.filter((obj) => obj.id !== taskObj.id);
         }
+        
+        // TODO: save to database
         setCheckedTasks(currentCheckedTasks);
         console.log(taskObj.taskName, isChecked, currentCheckedTasks);
     };
