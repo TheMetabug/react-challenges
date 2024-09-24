@@ -5,15 +5,18 @@
 import React, { useState } from "react";
 import CounterChallenge from "./counter/script";
 import DynamicListChallenge from "./dynamicList/script";
+import HexColorPickerChallenge from "./hexColorPicker/script";
 
 enum TabNames {
     Counter = 0,
     DynamicList = 1,
     HexColorPicker = 2,
-}
+};
+
+const TabNameKeys: string[] = Object.keys(TabNames).filter(key => !isNaN(Number(key)));
 
 const getTabName = (index: number): string => {
-    if (index < 0 && Object.keys(TabNames).length > index) {
+    if (index < 0 && TabNameKeys.length - 1 > index) {
         return "404 Tab not found";
     }
 
@@ -25,7 +28,7 @@ const Pages = () => {
     const [currentTitle, changeTitle] = useState(getTabName(currentTab));
 
     const nextTab = () => {
-        if (currentTab + 1 >= Object.keys(TabNames).length - 1) return;
+        if (currentTab + 1 > TabNameKeys.length - 1) return;
 
         changeTab(currentTab + 1);
         changeTitle(getTabName(currentTab + 1));
@@ -45,6 +48,8 @@ const Pages = () => {
                 return <CounterChallenge />;
             case 1:
                 return <DynamicListChallenge />;
+            case 2:
+                return <HexColorPickerChallenge />;
         }
     };
 
