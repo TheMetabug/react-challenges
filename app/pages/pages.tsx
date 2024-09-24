@@ -11,9 +11,11 @@ enum TabNames {
     Counter = 0,
     DynamicList = 1,
     HexColorPicker = 2,
-};
+}
 
-const TabNameKeys: string[] = Object.keys(TabNames).filter(key => !isNaN(Number(key)));
+const TabNameKeys: string[] = Object.keys(TabNames).filter(
+    (key) => !isNaN(Number(key))
+);
 
 const getTabName = (index: number): string => {
     if (index < 0 && TabNameKeys.length - 1 > index) {
