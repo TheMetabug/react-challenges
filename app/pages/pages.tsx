@@ -6,11 +6,13 @@ import React, { useState } from "react";
 import CounterChallenge from "./counter/script";
 import DynamicListChallenge from "./dynamicList/script";
 import HexColorPickerChallenge from "./hexColorPicker/script";
+import PasswordStrengthChallenge from "./passwordStrengthChecker/script";
 
 enum TabNames {
     Counter = 0,
     DynamicList = 1,
     HexColorPicker = 2,
+    PasswordStrength = 3,
 }
 
 const TabNameKeys: string[] = Object.keys(TabNames).filter(
@@ -52,6 +54,8 @@ const Pages = () => {
                 return <DynamicListChallenge />;
             case 2:
                 return <HexColorPickerChallenge />;
+            case 3:
+                return <PasswordStrengthChallenge />;
         }
     };
 
