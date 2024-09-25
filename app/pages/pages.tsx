@@ -7,12 +7,14 @@ import CounterChallenge from "./counter/script";
 import DynamicListChallenge from "./dynamicList/script";
 import HexColorPickerChallenge from "./hexColorPicker/script";
 import PasswordStrengthChallenge from "./passwordStrengthChecker/script";
+import CountdownTimerChallenge from "./countdownTimer/script";
 
 enum TabNames {
     Counter = 0,
     DynamicList = 1,
     HexColorPicker = 2,
     PasswordStrength = 3,
+    CountdownTimer = 4,
 }
 
 const TabNameKeys: string[] = Object.keys(TabNames).filter(
@@ -56,6 +58,8 @@ const Pages = () => {
                 return <HexColorPickerChallenge />;
             case 3:
                 return <PasswordStrengthChallenge />;
+            case 4:
+                return <CountdownTimerChallenge />;
         }
     };
 
