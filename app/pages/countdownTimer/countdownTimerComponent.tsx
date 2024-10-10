@@ -1,15 +1,50 @@
-import React, { useRef, useState, MutableRefObject, useCallback } from "react";
+import React, { useRef, useState, MutableRefObject } from "react";
 import moment from "moment";
+import AlarmSound from "./alarmSound";
 
+/**
+ * A React component that displays a countdown timer.
+ *
+ * The timer can be started and stopped by a button.
+ * When the timer is running, the time is displayed in mm:ss format.
+ * When the timer is stopped, an input field is shown to allow the user to set the timer.
+ * The timer can be set by inputting a number of seconds or a time in mm:ss format.
+ * When the timer reaches 0, a sound is played and the timer is stopped.
+ */
 const CountdownTimerComponent: React.FC = () => {
     const [timer, setTimer] = useState(600000);
     const [timerInput, setTimerInput] = useState("10:00");
     const [isRunning, setIsRunning] = useState(false);
     const intervalId: MutableRefObject<NodeJS.Timeout | null> = useRef(null);
+    const alarmSoundRef = useRef<Alarmsound>(null);
+    const zeroTime = moment("00:00", "mm:ss");
 
-    const setTimerCallback = useCallback(() => {
-        setTimer((prevTimer) => prevTimer - 1000);  
-    }, [])
+    /**
+     * Callback function for interval to update the timer.
+     * If the time is greater than 0, reduce the time by 1 second.
+     * If the time is 0, stop the timer and play the alarm sound.
+     */
+    const setTimerCallback = () => {
+        setTimer((prevTimer) => {
+            if (prevTimer <= 0) {
+                return prevTimer;
+            }
+
+            // Calculate new time by reducing the previous time by 1 second
+            const newTime = prevTimer - 1000;
+
+            // Then check if the new time is 0, if so, stop the timer and play the alarm
+            const momentObj = moment(String(newTime), "x");
+            const newTimeSeconds =
+                Number(momentObj.format("x")) - Number(zeroTime.format("x"));
+            if (newTimeSeconds <= 0) {
+                clearInterval(intervalId.current!);
+                alarmSoundRef.current?.playAudio();
+            }
+
+            return newTime;
+        });
+    };
 
     /**
      * Starts the countdown timer.
@@ -19,23 +54,11 @@ const CountdownTimerComponent: React.FC = () => {
      */
     const startTimer = () => {
         // Set running to true and set timer value
-        console.log(timerInput,timer);
         setIsRunning(true);
-        const [minute, seconds] = timerInput.split(':');
-        setTimer(moment({minute: parseInt(minute), seconds: parseInt(seconds)}).milliseconds());
-        console.log(timerInput, timer, minute, seconds);
+        const momentObj = moment(timerInput, "mm:ss");
+        setTimer(Number(momentObj.format("x")));
 
-        intervalId.current = setInterval(() => {
-            console.log("Interval callback");
-            setTimerCallback();
-
-            // Play audio when timer reaches zero and stop timer
-            if (timer === 0) {
-                const sound = new Audio("./alarm.mp3");
-                sound.play();
-                stopTimer();
-            }
-        }, 1000);
+        intervalId.current = setInterval(setTimerCallback, 1000);
     };
 
     /**
@@ -46,9 +69,19 @@ const CountdownTimerComponent: React.FC = () => {
     const stopTimer = () => {
         setIsRunning(false);
         clearInterval(intervalId.current!);
-        setTimerInput(moment.utc(timer).format("mm:ss").toString());
+        setTimerInput("00:00");
+        alarmSoundRef.current?.stopAudio();
     };
 
+    /**
+     * Verifies the timer input and updates it if valid.
+     *
+     * Allows timer input to be updated only if it is a number or a string with
+     * a colon in the middle. If the input is four digits, it is formatted to
+     * mm:ss format.
+     *
+     * @param newInput The new timer input to verify and update.
+     */
     const verifyTimerInput = (newInput: string) => {
         // Make full input with only numbers to correct format
         if (newInput.match(/^\d{4}$/)) {
@@ -100,6 +133,8 @@ const CountdownTimerComponent: React.FC = () => {
             >
                 {isRunning ? "Stop" : "Start"}
             </button>
+            {/* Include alarm sound component */}
+            <AlarmSound ref={alarmSoundRef} />
         </div>
     );
 };
